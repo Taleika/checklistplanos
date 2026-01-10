@@ -37,6 +37,24 @@ h1{
     transition:color .3s ease;
 }
 
+/* BOTÓN RESET */
+.reset-btn{
+    display:block;
+    margin:0 auto 20px;
+    padding:12px 26px;
+    border-radius:40px;
+    border:none;
+    background:#eee;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .25s ease;
+}
+
+.reset-btn:hover{
+    background:#ddd;
+    transform:translateY(-1px);
+}
+
 /* LISTA */
 ul{
     list-style:none;
@@ -98,6 +116,8 @@ li.done label{
 <div class="app">
     <h1 id="title">Planos – Entrada</h1>
 
+    <button class="reset-btn" id="resetBtn">Reset checklist</button>
+
     <ul id="checklist">
         <li><input type="checkbox"><label>PM Seguimiento desde atrás</label></li>
         <li><input type="checkbox"><label>PP Seguimiento desde atrás mira de reojo</label></li>
@@ -128,18 +148,41 @@ li.done label{
     </ul>
 
     <div class="footer">
-        Checklist de rodaje – móvil friendly
+        Checklist de rodaje – se guarda automáticamente
     </div>
 </div>
 
 <script>
-const checklist = document.querySelectorAll('#checklist li');
+const checklistItems = document.querySelectorAll('#checklist li');
 const title = document.getElementById('title');
+const resetBtn = document.getElementById('resetBtn');
 
-function updateState(){
+const STORAGE_KEY = 'checklist-planos-entrada';
+
+/* CARGAR ESTADO */
+function loadState(){
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    checklistItems.forEach((item, index)=>{
+        const checkbox = item.querySelector('input');
+        checkbox.checked = saved[index] || false;
+    });
+    updateUI();
+}
+
+/* GUARDAR ESTADO */
+function saveState(){
+    const state = [];
+    checklistItems.forEach(item=>{
+        state.push(item.querySelector('input').checked);
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+/* ACTUALIZAR UI */
+function updateUI(){
     let completed = 0;
 
-    checklist.forEach(item=>{
+    checklistItems.forEach(item=>{
         const checkbox = item.querySelector('input');
         if(checkbox.checked){
             item.classList.add('done');
@@ -149,20 +192,38 @@ function updateState(){
         }
     });
 
-    // Si están todos completos
-    if(completed === checklist.length){
-        title.style.color = 'var(--green)';
+    if(completed === checklistItems.length){
         title.textContent = 'Planos – Entrada (COMPLETO)';
+        title.style.color = 'var(--green)';
     }else{
-        title.style.color = 'var(--red)';
         title.textContent = 'Planos – Entrada';
+        title.style.color = 'var(--red)';
     }
 }
 
-// Eventos
-checklist.forEach(item=>{
-    item.querySelector('input').addEventListener('change', updateState);
+/* EVENTOS */
+checklistItems.forEach(item=>{
+    item.querySelector('input').addEventListener('change',()=>{
+        saveState();
+        updateUI();
+    });
 });
+
+/* RESET */
+resetBtn.addEventListener('click',()=>{
+    if(!confirm('¿Resetear checklist?')) return;
+
+    checklistItems.forEach(item=>{
+        item.querySelector('input').checked = false;
+        item.classList.remove('done');
+    });
+
+    localStorage.removeItem(STORAGE_KEY);
+    updateUI();
+});
+
+/* INIT */
+loadState();
 </script>
 
 </body>
