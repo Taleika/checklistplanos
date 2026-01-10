@@ -5,144 +5,195 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Taleika Films – Checklist Rodaje</title>
 
-<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
+/* =======================
+   VARIABLES DE TEMA
+======================= */
 :root{
-    --bg:#0e0e0e;
-    --panel:#161616;
-    --text:#eaeaea;
-    --muted:#888;
     --magenta:#c4029d;
     --done:#2ecc71;
 }
 
-/* RESET */
-*{margin:0;padding:0;box-sizing:border-box;}
-
-body{
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    padding:20px;
+/* MODO OSCURO – RODAJE */
+body[data-theme="dark"]{
+    --bg:#0e0e0e;
+    --panel:#161616;
+    --text:#eaeaea;
+    --muted:#888;
 }
 
-/* HEADER */
+/* MODO CLARO */
+body[data-theme="light"]{
+    --bg:#ffffff;
+    --panel:#f4f4f4;
+    --text:#111;
+    --muted:#666;
+}
+
+/* =======================
+   RESET
+======================= */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Roboto', sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    transition:background .3s ease, color .3s ease;
+}
+
+/* =======================
+   HEADER
+======================= */
 header{
-    text-align:center;
-    padding:30px 20px;
     background:#000;
+    text-align:center;
+    padding:24px 20px 28px;
 }
 
 header img{
-    width:140px;
-    margin-bottom:15px;
-    filter:invert(1); /* LOGO BLANCO */
+    width:130px;
+    filter:invert(1);
+    margin-bottom:12px;
 }
 
 header h1{
-    font-size:1.4rem;
+    font-size:1.2rem;
     font-weight:500;
-    letter-spacing:.25rem;
+    letter-spacing:.35rem;
     text-transform:uppercase;
+    color:#fff;
 }
 
 .separator{
-    height:4px;
+    height:5px;
     background:var(--magenta);
-    margin-bottom:30px;
 }
 
-/* CONTENEDOR */
-.app{
-    max-width:720px;
+/* =======================
+   CONTENEDOR
+======================= */
+.container{
+    max-width:680px;
     margin:0 auto;
-    background:var(--panel);
-    border-radius:18px;
-    padding:25px 20px;
+    padding:30px 20px 120px;
 }
 
-/* LISTA */
+/* =======================
+   CHECKLIST
+======================= */
 ul{
     list-style:none;
 }
 
 li{
+    background:var(--panel);
+    padding:14px 18px;
+    border-radius:12px;
+    margin-bottom:12px;
     display:flex;
-    align-items:flex-start;
+    align-items:center;
     gap:14px;
-    padding:14px 10px;
-    border-bottom:1px solid #222;
-    transition:background .3s ease;
+    cursor:pointer;
+    transition:background .25s ease, transform .15s ease;
+}
+
+li:hover{
+    transform:translateY(-1px);
 }
 
 li.done{
-    background:rgba(46,204,113,.08);
+    background:rgba(46,204,113,.15);
 }
 
 li.done span{
-    color:var(--done);
     text-decoration:line-through;
+    color:var(--done);
 }
 
 .number{
-    color:var(--muted);
-    min-width:26px;
+    font-weight:700;
+    opacity:.6;
+    min-width:28px;
 }
 
-input[type="checkbox"]{
-    transform:scale(1.2);
-    margin-top:4px;
-}
-
-span{
-    line-height:1.4;
-}
-
-/* BOTONES */
-.controls{
+.checkbox{
+    width:22px;
+    height:22px;
+    border-radius:6px;
+    border:2px solid var(--magenta);
     display:flex;
-    gap:12px;
-    margin-top:25px;
-    flex-wrap:wrap;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+
+li.done .checkbox{
+    background:var(--done);
+    border-color:var(--done);
+}
+
+.checkbox::after{
+    content:"✔";
+    color:#fff;
+    font-size:14px;
+    display:none;
+}
+
+li.done .checkbox::after{
+    display:block;
+}
+
+/* =======================
+   CONTROLES
+======================= */
+.controls{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:var(--panel);
+    padding:14px;
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    border-top:1px solid rgba(255,255,255,.08);
 }
 
 button{
-    flex:1;
-    padding:14px;
     border:none;
+    padding:12px 18px;
     border-radius:40px;
-    font-size:.95rem;
+    font-weight:600;
     cursor:pointer;
+    font-size:.9rem;
 }
 
-.reset{
-    background:#333;
-    color:#fff;
-}
-
-.add{
+button.add{
     background:var(--magenta);
     color:#fff;
 }
 
-/* INPUT NUEVO */
-.new-item{
-    margin-top:15px;
-    display:none;
+button.reset{
+    background:#333;
+    color:#fff;
 }
 
-.new-item input{
-    width:100%;
-    padding:12px 16px;
-    border-radius:30px;
-    border:none;
-    outline:none;
+button.theme{
+    background:#555;
+    color:#fff;
 }
 </style>
 </head>
 
-<body>
+<body data-theme="dark">
 
 <header>
     <img src="images/LOGO TK.svg" alt="Taleika Films">
@@ -151,20 +202,20 @@ button{
 
 <div class="separator"></div>
 
-<div class="app">
+<div class="container">
     <ul id="list"></ul>
+</div>
 
-    <div class="new-item" id="newItem">
-        <input type="text" id="newText" placeholder="Nuevo plano...">
-    </div>
-
-    <div class="controls">
-        <button class="add" onclick="toggleNew()">➕ Agregar plano</button>
-        <button class="reset" onclick="resetList()">Reset</button>
-    </div>
+<div class="controls">
+    <button class="add" onclick="addItem()">➕ Agregar plano</button>
+    <button class="reset" onclick="resetList()">Reset</button>
+    <button class="theme" onclick="toggleTheme()">🌗 Modo</button>
 </div>
 
 <script>
+/* =======================
+   DATA
+======================= */
 const initialItems = [
 "PM Seguimiento desde atrás",
 "PP Seguimiento desde atrás mira de reojo",
@@ -179,73 +230,81 @@ const initialItems = [
 "PP sentada en el piso cámara girando",
 "PG Falso drone seguimiento desde arriba",
 "PM Acostada en el piso plano cenital",
-"PM Acostada en el piso cámara al ras de ella con los codos en el piso",
-"PP Acostada en el piso cámara al ras de ella con los codos en el piso",
+"PM Acostada en el piso cámara al ras con codos apoyados",
+"PP Acostada en el piso cámara al ras con codos apoyados",
 "PM Cámara gira alrededor contrapicada",
-"PP Posando para foto, cámara gira",
+"PP Posando para foto cámara gira",
 "PP desde arriba levanta la mirada y mira a cámara",
 "PG pasa caminando lateralmente",
 "PG travelling circular ella girando con la cámara",
-"PM Apoyada en una pared, plano lateral al ras de la pared ella mira",
-"PM Apoyada en una pared, frontal",
+"PM Apoyada en una pared plano lateral",
+"PM Apoyada en una pared frontal",
 "PP Apoyada en la pared",
-"PPP Cortado mitad de cara, ojo y boca (simil Marti)",
+"PPP Mitad de cara ojo y boca",
 "PPP Lateral desde atrás perfil",
-"PM la chica con la mano corre la cámara hacia un costado"
+"PM Mano corre la cámara hacia un costado"
 ];
 
-let items = JSON.parse(localStorage.getItem("checklist")) || initialItems.map(text => ({ text, done:false }));
-
 const list = document.getElementById("list");
+let items = JSON.parse(localStorage.getItem("checklist")) || initialItems.map(text => ({text, done:false}));
 
+/* =======================
+   RENDER
+======================= */
 function render(){
-    list.innerHTML="";
+    list.innerHTML = "";
     items.forEach((item,i)=>{
-        const li=document.createElement("li");
+        const li = document.createElement("li");
         if(item.done) li.classList.add("done");
-
-        li.innerHTML=`
+        li.innerHTML = `
             <span class="number">${i+1}.</span>
-            <input type="checkbox" ${item.done?"checked":""}>
+            <div class="checkbox"></div>
             <span>${item.text}</span>
         `;
-
-        li.querySelector("input").addEventListener("change",e=>{
-            item.done=e.target.checked;
+        li.onclick = ()=>{
+            item.done = !item.done;
             save();
-            render();
-        });
-
+        };
         list.appendChild(li);
     });
 }
 
+/* =======================
+   STORAGE
+======================= */
 function save(){
-    localStorage.setItem("checklist",JSON.stringify(items));
-}
-
-function resetList(){
-    if(!confirm("¿Resetear checklist?")) return;
-    items=initialItems.map(text=>({text,done:false}));
-    save();
+    localStorage.setItem("checklist", JSON.stringify(items));
     render();
 }
 
-function toggleNew(){
-    const box=document.getElementById("newItem");
-    box.style.display=box.style.display==="block"?"none":"block";
-    document.getElementById("newText").focus();
+function resetList(){
+    if(confirm("¿Resetear checklist?")){
+        items.forEach(i=>i.done=false);
+        save();
+    }
 }
 
-document.getElementById("newText").addEventListener("keydown",e=>{
-    if(e.key==="Enter" && e.target.value.trim()){
-        items.push({text:e.target.value.trim(),done:false});
-        e.target.value="";
+function addItem(){
+    const text = prompt("Nuevo plano:");
+    if(text){
+        items.push({text, done:false});
         save();
-        render();
     }
-});
+}
 
+/* =======================
+   THEME
+======================= */
+const body = document.body;
+const savedTheme = localStorage.getItem("theme") || "dark";
+body.dataset.theme = savedTheme;
+
+function toggleTheme(){
+    body.dataset.theme = body.dataset.theme === "dark" ? "light" : "dark";
+    localStorage.setItem("theme", body.dataset.theme);
+}
+
+/* INIT */
 render();
 </script>
 
