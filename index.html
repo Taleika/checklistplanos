@@ -86,6 +86,27 @@ header h1{
     padding:30px 20px 120px;
 }
 
+.list-selector{
+    margin-bottom:16px;
+}
+
+.list-selector label{
+    display:block;
+    font-size:.9rem;
+    color:var(--muted);
+    margin-bottom:6px;
+}
+
+.list-selector select{
+    width:100%;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.2);
+    background:var(--panel);
+    color:var(--text);
+    font-size:.95rem;
+}
+
 /* =======================
    CHECKLIST
 ======================= */
@@ -203,6 +224,10 @@ button.theme{
 <div class="separator"></div>
 
 <div class="container">
+    <div class="list-selector">
+        <label for="listSelect">Lista</label>
+        <select id="listSelect"></select>
+    </div>
     <ul id="list"></ul>
 </div>
 
@@ -216,7 +241,10 @@ button.theme{
 /* =======================
    DATA
 ======================= */
-const initialItems = [
+const listPresets = {
+"actual": {
+title: "Checklist actual",
+items: [
 "PM Seguimiento desde atrás",
 "PP Seguimiento desde atrás mira de reojo",
 "PP Seguimiento manos a contraluz mientras camina",
@@ -243,10 +271,91 @@ const initialItems = [
 "PPP Mitad de cara ojo y boca",
 "PPP Lateral desde atrás perfil",
 "PM Mano corre la cámara hacia un costado"
-];
+]
+},
+"sinteplast-planos": {
+title: "Sinteplast PLANOS",
+items: [
+"PP: Echando cemento y arena en balde",
+"PM: lo mismo, cemento y arena.",
+"PP y PM: Agua cayendo en el balde",
+"PM a contraluz en cámara lenta entra el batidor y hace un desastre",
+"PM y PP con cinta de peligro cruzando la calle.",
+"PP: sacando cemento con cuchara",
+"PP sacando arena con cuchara",
+"PM detalla Kit con el bache delante, fijo y en movimiento.",
+"PP de cada parte del producto, bolsa",
+"PP: Se pasa el cepillo en el bache",
+"PM: Pasando el cepillo otra angulación",
+"PP Sacando pedacitos de hormigón",
+"PP: Entra el Spray de costado al plano. Echa un poco al aire",
+"PM: Vemos rociar la superficie",
+"PP: Vemos rociar desde otro ángulo.",
+"PP: Abre el paquete del componente A",
+"PM: Se echa de a poco el polvo",
+"PP: Se echa el polvo",
+"PM: Se alisa con palita y con llana.",
+"PP: se aplica el spray otra vez arriba",
+"PM: se aplica el spray",
+"PM: Se emprolija",
+"PM: Plano corte de calle, planos de fábrica y ruedas pasando.",
+"PM: un pie pasa caminando por arriba",
+"PM: Un martillo golpea una torre de ladrillos.",
+"PP: Una maza golpea",
+"PM: Una rueda de un auto pasa por arriba.",
+"PG a PM: ZOOM in al bache",
+"PM: Kit plano producto.",
+"PM: Mano agarrando el spray movimiento como cargando un arma, apoyándolo fuerte sobre la palma de la otra mano",
+"PP: Rociando de distintos ángulos.",
+"PP: Se abre la bolsa",
+"PM: Polvo en el bache",
+"PM: Aplanando.",
+"PM: Spray sobre finalizado",
+"PM: pruebas rueda de auto."
+]
+}
+};
 
 const list = document.getElementById("list");
-let items = JSON.parse(localStorage.getItem("checklist")) || initialItems.map(text => ({text, done:false}));
+const listSelect = document.getElementById("listSelect");
+const savedSelectedList = localStorage.getItem("selectedList");
+const defaultListId = savedSelectedList && listPresets[savedSelectedList] ? savedSelectedList : "actual";
+let selectedListId = defaultListId;
+let items = loadItems(selectedListId);
+
+Object.entries(listPresets).forEach(([id,preset])=>{
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = preset.title;
+    listSelect.appendChild(option);
+});
+listSelect.value = selectedListId;
+listSelect.onchange = ()=>{
+    selectedListId = listSelect.value;
+    localStorage.setItem("selectedList", selectedListId);
+    items = loadItems(selectedListId);
+    render();
+};
+
+function getChecklistStorageKey(listId){
+    return `checklist_${listId}`;
+}
+
+function loadItems(listId){
+    const storageKey = getChecklistStorageKey(listId);
+    const savedItems = JSON.parse(localStorage.getItem(storageKey));
+    if(savedItems) return savedItems;
+
+    if(listId === "actual"){
+        const legacyItems = JSON.parse(localStorage.getItem("checklist"));
+        if(legacyItems){
+            localStorage.setItem(storageKey, JSON.stringify(legacyItems));
+            return legacyItems;
+        }
+    }
+
+    return listPresets[listId].items.map(text => ({text, done:false}));
+}
 
 /* =======================
    RENDER
@@ -273,7 +382,7 @@ function render(){
    STORAGE
 ======================= */
 function save(){
-    localStorage.setItem("checklist", JSON.stringify(items));
+    localStorage.setItem(getChecklistStorageKey(selectedListId), JSON.stringify(items));
     render();
 }
 
